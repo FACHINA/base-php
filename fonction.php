@@ -7,4 +7,4 @@ function calculAire($longueur, $largeur) {
     return $longueur * $largeur;
 }
 
-echo 'L\'aire du rectangle est de ' . calculAire($longueur, $largeur) . 'm2' . "\n";
+echo 'L\'aire du rectangle est de ' . ($longueur * $largeur) . 'm2' . "\n";
