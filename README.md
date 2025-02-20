@@ -113,6 +113,7 @@ class Utilisateur {
     public string $prenom;
     public Date $dateNaissance;
     private string $adresse;
+    private string $password
 
     public function __construct(string $nom, string $prenom, Date $dateNaissance, string $adresse) {
         $this->nom = $nom;
@@ -125,6 +126,10 @@ class Utilisateur {
         return $this->adresse;
     }
 
+    public function getPassword(): string {
+        return $this->password;
+    }
+
 }
 
 $user = new Utilisateur("Alice", "Doe", new Date("1990-01-01"), "123 Cotonou");
@@ -132,6 +137,7 @@ $user = new Utilisateur("Alice", "Doe", new Date("1990-01-01"), "123 Cotonou");
 echo $user->nom; // Alice
 echo $user->adresse; // Ne fonctionne pas car la propriété est privée (créer une méthode getAdresse() par exemple pour récupérer la valeur)
 echo $user->getAdresse(); // Fonctionne car la méthode est publique
+echo $user->getPassword(); // Fonctionne pas car la méthode est privée
 ```
 
 - Une **propriété** est une variable définie dans une classe, tandis qu'une **méthode** est une fonction appartenant à cette classe.
@@ -405,8 +411,6 @@ La directive `@csrf` protège contre les attaques CSRF (Cross-Site Request Forge
 
 ---
 
-Ces ajouts à ton guide te permettront de progresser avec Laravel et de maîtriser les bases essentielles pour commencer à développer des applications robustes.
----
 
 Ce guide vous permettra d'acquérir une maîtrise solide du framework Laravel. Expérimentez et approfondissez chaque concept pour bâtir des applications robustes et évolutives !
 
