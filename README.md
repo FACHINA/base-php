@@ -126,7 +126,7 @@ class Utilisateur {
         return $this->adresse;
     }
 
-    public function getPassword(): string {
+    private function getPassword(): string {
         return $this->password;
     }
 
@@ -181,13 +181,22 @@ echo strtoupper("hello"); // HELLO
 ```
 
 ### 8. Rédaction d'Algorithmes
-- Structure d'un algorithme simple :
+- Etre en mesure de regiger des algorithme simple
+
+Redaction d'une fonction permettant de calculer le factoriel d'un nombre par exemple
 
 ```php
-function somme($a, $b) {
-    return $a + $b;
+function calculerFactoriel(float $var): float {
+    $resultat = 1;
+    for ($i = 1; $i <= $var; $i++) {
+        $resultat *= $i;
+    }
+    return $resultat;
 }
-echo somme(4, 5); // 9
+
+$x = 8;
+
+echo calculerFactoriel($x); // 40320
 ```
 
 ### 9. Bases SQL
@@ -203,11 +212,48 @@ CREATE TABLE utilisateurs (
 );
 ```
 
-- Insertion et récupération de données :
+- Définition de contraintes des clés étrangères :
+
+```sql
+-- Durant la création de la table utilisateurs
+CREATE TABLE utilisateurs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nom VARCHAR(100),
+    email VARCHAR(100) UNIQUE,
+    client_id INT,
+    FOREIGN KEY (client_id) REFERENCES clients(id)
+)
+
+-- Après la création de la table utilisateurs
+ALTER TABLE utilisateurs
+ADD CONSTRAINT fk_clients_id FOREIGN KEY (id) REFERENCES clients(id);
+```
+
+
+- Insertion, mise à jour et récupération de données :
 
 ```sql
 INSERT INTO utilisateurs (nom, email) VALUES ('Alice', 'alice@example.com');
+UPDATE utilisateurs SET nom = 'Bob' WHERE id = 1;
 SELECT * FROM utilisateurs;
+```
+
+- Edition de structure de table :
+
+```sql
+ALTER TABLE utilisateurs ADD COLUMN prenom VARCHAR(100);
+ALTER TABLE utilisateurs DROP COLUMN email;
+ALTER TABLE utilisateurs MODIFY COLUMN nom VARCHAR(100);
+ALTER TABLE utilisateurs CHANGE COLUMN nom nom VARCHAR(100);
+```
+
+- Utilisation des jointures :
+
+```sql
+-- Selection des utilisateurs et leurs clients
+
+SELECT (utilisateurs.*, clients.nom) FROM utilisateurs
+JOIN clients ON utilisateurs.id = clients.id;
 ```
 
 ### 10. Architecture MVC
@@ -275,9 +321,7 @@ php artisan serve
 Cela génère une application Laravel prête à l'emploi. Vérifiez son bon fonctionnement en accédant à `http://127.0.0.1:8000`.
 
 ### 2. Création des Routes (Routing)
-Objectif : Définir les routes permettant de naviguer entre les pages.
-
-Dans `routes/web.php` :
+Objectif : Définir les routes permettant de naviguer entre les pages dans le fichier `routes/web.php` :
 #### Route `GET`
 ```php
 
