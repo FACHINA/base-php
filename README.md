@@ -244,7 +244,30 @@ Laravel propose une méthode d'installation rapide via la CLI officielle. Assure
 
 ```sh
 composer global require laravel/installer
+```
+#### Installation du projet
+
+**Important :** Créez votre projet dans un répertoire où vous avez les permissions appropriés.
+
+Pour les utilisateurs `Windows` vous pourriez créer vos projets dans le repèrtoire `C:\dev\projets_lavavel`.
+```
 laravel new mon_projet
+```
+Cette commande créer le projet laravel dans le dossier `mon_projet`
+
+#### Configurer votre espace de travail (VSCode)
+Ouvrez votre projet dans VSCode et sauvegardez le en tant qu'espace de travail dans un dossier prévus à cet effet. Exemple: `C:\Utilisateur\<VotreNom>\Documents\vscode\espace_de_travail\laravel\`
+
+#### Installer les extensions (VSCode)
+Installer les extensions suivantes
+- `PHP debug (Xdebug)`  
+- `PHP Intelephense (Ben Mewburn)` 
+- `PHP Namespace Resolver`
+- `Laravel Extension Pack (Winnie Lin)`
+
+#### Lancer l'application
+
+```
 cd mon_projet
 php artisan serve
 ```
@@ -256,19 +279,86 @@ Objectif : Définir les routes permettant de naviguer entre les pages.
 
 Dans `routes/web.php` :
 ```php
+
+// Route GET
 Route::get('/', function () {
     return view('welcome');
 });
 ```
+#### Route `POST` avec nommage
+Nommer une route permet de l'appeler plus facilement dans le code.
+```php
+Route::post('/inscription', function (Request $request) {
+    $nom = $request->input('nom');
+    $prenom = $request->input('prenom');
+    $dateNaissance = $request->input('date_naissance');
+    
+    // Enregistrement dans la base de données
+    // ...
+
+    // Redirection vers la page d'accueil de l'administrateur sans le nom de la route
+    return redirect('/admin/home');
+    // Redirection vers la page d'accueil de l'administrateur avec le nom de la route
+    return redirect()->route('admin.home');
+})->name('inscription');
+```
+#### Route `PUT` (mise à jour complète)
+```php
+Route::put('/profil', function (Request $request) {
+    // Modification de la ressource
+    // ...
+});
+```
+#### Route `PATCH` (mise à jour partielle)
+```php
+Route::patch('/profil', function (Request $request) {
+    // Modification partielle de la ressource
+    // ...
+});
+```
+#### Route `DELETE`
+```php
+Route::delete('/suppression', function (Request $request) {
+    // Suppression de la ressource
+    // ...
+});
+```
+#### Route `GET` avec paramètre
+```php
+Route::get('/articles/{id}', function ($id) {
+    return view('article', ['id' => $id]);
+});
+```
+#### Route associée à un contrôleur
+```php
+Route::get('/articles', [ArticleController::class, 'liste']);
+Route::get('/articles/{id}', [ArticleController::class, 'show']);
+```
+Dans la classe ArticleController la méthode show($id) sera appelée lorsque l'utilisateur accède à l'URL `/articles/1` par exemple.
+```php
+class ArticleController extends Controller {
+    public function show($id) {
+        return view('article', ['id' => $id]);
+    }
+    public function liste() {
+        $articles = Article::all();
+        return view('article_list', ['articles' => $articles]);
+        // Alternativement vous pouvez utiliser la méthode compact
+        return view('article_list', compact('articles'));
+    }
+}
+```
 
 ### 3. Création des Contrôleurs
+**Objectif :** Apprendre à créer des contrôleurs via Artisan.
+
+Les controllers sont des classes qui gèrent les interactions entre les modèles et les vues. Ils contiennent des méthodes qui sont appelées lorsque une requête est envoyée à l'application.
+En bref les controlleur continnent la logique métiers de l'application.
+
+L'utiliation des controlleurs permet de séparer la logique métier de l'application et de rendre le code plus lisible et modulaire.
 ```sh
 php artisan make:controller ClientController
 ```
-
-Voici la suite de ton guide avec les ajouts demandés :
-
----
 
 
 ### 4. Création des Vues avec Blade
@@ -276,6 +366,36 @@ Objectif : Apprendre à afficher dynamiquement les informations et des projets v
 
 Blade est le moteur de templates de Laravel. Il permet de séparer la logique et la présentation en créant des vues dynamiques. Pour utiliser Blade, crée un fichier `.blade.php` dans le dossier `resources/views`.
 
+#### Accéder aux variables dans une vue
+
+```php
+class ClientController extends Controller {
+    public function index() {
+        $clients = Client::all();
+        return view('clients', compact('clients'));
+    }
+    public function show($id) {
+        $client = Client::find($id);
+        $age_client = $client->calculerAge();
+        return view('client.show', compact('client', 'age_client'));
+    }
+}
+```
+#### Exemple de fichier Blade pour la fonctionnalité d'affichage d'un client :
+```php
+<--- resources/views/client.show.blade.php --->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Client</title>
+</head>
+<body>
+    <h1>Client : {{ $client->nom }}</h1>
+    <p>Age : {{ $age_client }}</p>
+</body>
+</html>
+```
 #### Exemple de fichier Blade pour afficher une liste :
 ```php
 <!-- resources/views/clients.blade.php -->
@@ -297,19 +417,10 @@ Blade est le moteur de templates de Laravel. Il permet de séparer la logique et
 </html>
 ```
 
-Dans le contrôleur, passe la variable `$clients` à la vue :
-```php
-public function index()
-{
-    $clients = Client::all();
-    return view('clients', compact('clients'));
-}
-```
-
 ---
 
 ### 5. Création des Modèles (Models) et Gestion de la Base de Données
-Objectif : Créer des modèles pour représenter les tables, et interagir avec la base de données.
+**Objectif :** Créer des modèles pour représenter les tables, et interagir avec la base de données.
 
 Les modèles Laravel permettent de manipuler les données d'une table de manière intuitive. Chaque modèle est lié à une table spécifique dans la base de données.
 
@@ -322,6 +433,8 @@ Ce modèle sera lié à une table `clients` dans la base de données. Pour effec
 
 ```php
 $clients = Client::all(); // Récupérer tous les clients
+$client1 = Client::find(1); // Récupérer un client avec l'ID 1
+$client_aballo = Client::where('nom', 'Aballo')->first(); // Récupérer le premier client ayant le nom Aballo
 ```
 
 #### Création de la migration pour les tables `clients` et `projects` :
