@@ -278,9 +278,9 @@ Cela génère une application Laravel prête à l'emploi. Vérifiez son bon fonc
 Objectif : Définir les routes permettant de naviguer entre les pages.
 
 Dans `routes/web.php` :
+#### Route `GET`
 ```php
 
-// Route GET
 Route::get('/', function () {
     return view('welcome');
 });
